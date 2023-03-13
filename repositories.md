@@ -6,3 +6,7 @@
 [Backend](https://github.com/IO2-Team/Backend)</p>
 [Mobile](https://github.com/IO2-Team/Mobile)</p>
 [Frontend](https://github.com/IO2-Team/Frontend)</p>
+
+
+### Team 3: Cichomski, Bałaźiński, Tryksza,Dąbkowski, Dybowski
+[Organizacją] https://github.com/IO2-team-3
