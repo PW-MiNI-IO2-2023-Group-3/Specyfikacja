@@ -9,4 +9,4 @@
 
 
 ### Team 3: Cichomski, Bałaźiński, Tryksza,Dąbkowski, Dybowski
-[Organizacją] https://github.com/IO2-team-3
+[Organizacja](https://github.com/IO2-team-3)
