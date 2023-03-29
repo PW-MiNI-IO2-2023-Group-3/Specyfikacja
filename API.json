@@ -144,7 +144,7 @@
           {
             "name": "categories",
             "in": "query",
-            "description": "Unix time stamp of end of event",
+            "description": "Array of id of categories that event belong to.",
             "required": true,
             "schema": {
               "type": "array",
