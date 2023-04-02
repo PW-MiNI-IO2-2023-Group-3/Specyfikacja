@@ -38,69 +38,12 @@ paths:
         - Event
       summary: Add new event
       operationId: addEvent
-      parameters:
-        - name: title
-          in: query
-          description: title of Event
-          required: true
-          schema:
-            type: string
-            example: Short description of Event
-        - name: name
-          in: query
-          description: title of Event
-          required: true
-          schema:
-            type: string
-            example: Long description of Event
-        - name: freePlace
-          in: query
-          description: No of free places
-          required: true
-          schema:
-            type: integer
-        - name: placeSchema
-          in: query
-          description: seralized place schema
-          required: false
-          schema:
-            type: string
-        - name: startTime
-          in: query
-          description: Unix time stamp of begin of event
-          required: true
-          schema:
-            type: integer
-            example: 1683034164
-        - name: endTime
-          in: query
-          description: Unix time stamp of end of event
-          required: true
-          schema:
-            type: integer
-            example: 1683034164
-        - name: latitude
-          in: query
-          description: Latitude of event
-          required: true
-          schema:
-            type: string
-            example: '40.4775315'
-        - name: longitude
-          in: query
-          description: Longitude of event
-          required: true
-          schema:
-            type: string
-            example: '-3.7051359'
-        - name: categories
-          in: query
-          description: Array of id of categories that event belong to.
-          required: true
-          schema:
-            type: array
-            items:
-              type: integer
+      requestBody:
+        description: Add event
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/EventForm'
       responses:
         '201':
           description: event created
@@ -318,25 +261,12 @@ paths:
         - Event organizer
       summary: Create orginizer account
       operationId: signUp
-      parameters:
-        - name: name
-          in: query
-          description: name of Organizer
-          required: true
-          schema:
-            type: string
-        - name: email
-          in: query
-          description: email of Organizer
-          required: true
-          schema:
-            type: string
-        - name: password
-          in: query
-          description: password of Organizer
-          required: true
-          schema:
-            type: string
+      requestBody:
+        description: Add event
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/OrganizerForm'
       responses:
         '201':
           description: successful operation
@@ -519,6 +449,41 @@ components:
           type: array
           items:
             $ref: '#/components/schemas/Place'
+
+    EventForm:
+      type: object
+      properties:
+        title:
+          type: string
+          example: Short description of Event
+        startTime:
+          type: integer
+          format: int64
+          example: 1673034164
+        endTime:
+          type: integer
+          format: int64
+          example: 1683034164
+        latitude:
+          type: string
+          example: '40.4775315'
+        longitude:
+          type: string
+          example: '-3.7051359'
+        name:
+          type: string
+          example: Long description of Event
+        placeSchema:
+          type: string
+          example: Seralized place schema
+        categories:
+          type: array
+          items:
+            $ref: '#/components/schemas/Category'
+        freePlace:
+          type: integer
+          format: int64
+          example: 2       
           
     Place:
       type: object
@@ -565,6 +530,7 @@ components:
         reservationToken:
           type: string
           example: df0d69cbe68fb6e2b27aa88f6f94497e
+
     Organizer:
       type: object
       properties:
@@ -591,6 +557,20 @@ components:
           enum:
             - pending
             - confirmed
+ 
+    OrganizerForm:
+      type: object
+      properties:
+        name:
+          type: string
+          example: theUser
+        email:
+          type: string
+          example: john@email.com
+        password:
+          type: string
+          example: '12345'
+
   securitySchemes:
     token:
       type: apiKey
