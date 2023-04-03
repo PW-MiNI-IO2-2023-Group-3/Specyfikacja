@@ -84,7 +84,10 @@
             }
           },
           "400": {
-            "description": "event can not be created"
+            "description": "event can not be created, field invalid"
+          },
+          "403": {
+            "description": "invalid session"
           }
         },
         "security": [
@@ -114,6 +117,9 @@
                 }
               }
             }
+          },
+          "403": {
+            "description": "invalid session"
           }
         },
         "security": [
@@ -183,6 +189,9 @@
           "204": {
             "description": "deleted"
           },
+          "403": {
+            "description": "invalid session"
+          },
           "404": {
             "description": "id not found"
           }
@@ -221,8 +230,17 @@
           }
         },
         "responses": {
+          "200": {
+            "description": "nothing to do, no field to patch"
+          },
           "202": {
             "description": "patched"
+          },
+          "400": {
+            "description": "invalid id or fields in body"
+          },
+          "403": {
+            "description": "invalid session"
           },
           "404": {
             "description": "id not found"
@@ -327,6 +345,9 @@
           },
           "400": {
             "description": "category already exist"
+          },
+          "403": {
+            "description": "invalid session"
           }
         },
         "security": [
@@ -377,7 +398,7 @@
             }
           },
           "400": {
-            "description": "no free place"
+            "description": "no free place or place taken"
           },
           "404": {
             "description": "event not exist or done"
@@ -441,7 +462,7 @@
             }
           },
           "400": {
-            "description": "organizer already exist"
+            "description": "email already in use"
           }
         }
       },
@@ -462,7 +483,7 @@
               }
             }
           },
-          "400": {
+          "403": {
             "description": "invalid session"
           }
         },
@@ -501,18 +522,17 @@
           }
         ],
         "responses": {
-          "201": {
-            "description": "account confirmed",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/Organizer"
-                }
-              }
-            }
+          "200": {
+            "description": "nothing to do, account already confirmed"
+          },
+          "202": {
+            "description": "account confirmed"
           },
           "400": {
             "description": "code wrong"
+          },
+          "404": {
+            "description": "organizer id not found"
           }
         }
       },
@@ -536,6 +556,9 @@
         "responses": {
           "204": {
             "description": "deleted"
+          },
+          "403": {
+            "description": "invalid session"
           },
           "404": {
             "description": "id not found"
@@ -575,8 +598,17 @@
           }
         },
         "responses": {
+          "200": {
+            "description": "nothing to do, no field to patch"
+          },
           "202": {
             "description": "patched"
+          },
+          "400": {
+            "description": "invalid email or password"
+          },
+          "403": {
+            "description": "invalid session"
           },
           "404": {
             "description": "id not found"
@@ -635,7 +667,7 @@
             }
           },
           "400": {
-            "description": "Invalid email/password supplied"
+            "description": "Invalid email or password"
           }
         }
       }
