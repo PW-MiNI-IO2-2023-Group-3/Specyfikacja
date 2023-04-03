@@ -7,7 +7,7 @@ info:
     email: XXX@pw.edu.pl
   version: 1.0.0
 servers:
-  - url: https://pw.edu.pl/api/v3
+  - url: https://yourbackenhosting.edu.pl
 tags:
   - name: Event organizer
     description: API for web organizer portal
@@ -93,7 +93,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/Event'
+                $ref: '#/components/schemas/EventWithPlaces'
         '400':
           description: Invalid ID supplied
         '404':
@@ -134,7 +134,7 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/Event'
+              $ref: '#/components/schemas/EventPatch'
       responses:
         '202':
           description: patched
@@ -150,7 +150,7 @@ paths:
       operationId: getByCategory
       parameters:
         - name: categoryId
-          in: query
+          in: header
           description: ID of category
           required: true
           schema:
@@ -189,7 +189,7 @@ paths:
       operationId: addCategories
       parameters:
         - name: categoryName
-          in: query
+          in: header
           description: name of category
           required: true
           schema:
@@ -213,14 +213,14 @@ paths:
       operationId: makeReservation
       parameters:
         - name: eventId
-          in: query
+          in: header
           description: ID of event
           required: true
           schema:
             type: integer
             format: int64
         - name: placeID
-          in: query
+          in: header
           description: ID of place
           required: false
           schema:
@@ -244,7 +244,7 @@ paths:
       operationId: deleteReservation
       parameters:
         - name: reservationToken
-          in: query
+          in: header
           description: token of reservation
           required: true
           schema:
@@ -306,7 +306,7 @@ paths:
           schema:
             type: string
         - name: code
-          in: query
+          in: header
           description: code from email
           required: true
           schema:
@@ -356,7 +356,7 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/Organizer'
+              $ref: '#/components/schemas/OrganizerPatch'
       responses:
         '202':
           description: patched
@@ -373,13 +373,13 @@ paths:
       operationId: loginOrganizer
       parameters:
         - name: email
-          in: query
+          in: header
           description: The organizer email for login
           required: true
           schema:
             type: string
         - name: password
-          in: query
+          in: header
           description: the password
           required: true
           schema:
@@ -402,6 +402,16 @@ components:
     Event:
       required:
         - id
+        - title
+        - name
+        - startTime
+        - endTime
+        - latitude
+        - longitude
+        - maxPlace
+        - categories
+        - status
+        - freePlace
       type: object
       properties:
         id:
@@ -428,9 +438,64 @@ components:
         name:
           type: string
           example: Long description of Event
+        status:
+          $ref: '#/components/schemas/EventStatus'
+        categories:
+          type: array
+          items:
+            $ref: '#/components/schemas/Category'
+        freePlace:
+          type: integer
+          format: int64
+          example: 2
+        maxPlace:
+          type: integer
+          format: int64
+          example: 100
         placeSchema:
           type: string
           example: Seralized place schema
+  
+    EventWithPlaces:
+      required:
+        - id
+        - title
+        - name
+        - startTime
+        - endTime
+        - latitude
+        - longitude
+        - maxPlace
+        - categories
+        - status
+        - freePlace
+        - places
+      type: object
+      properties:
+        id:
+          type: integer
+          format: int64
+          example: 10
+        title:
+          type: string
+          example: Short description of Event
+        startTime:
+          type: integer
+          format: int64
+          example: 1673034164
+        endTime:
+          type: integer
+          format: int64
+          example: 1683034164
+        latitude:
+          type: string
+          example: '40.4775315'
+        longitude:
+          type: string
+          example: '-3.7051359'
+        name:
+          type: string
+          example: Long description of Event
         status:
           $ref: '#/components/schemas/EventStatus'
         categories:
@@ -449,13 +514,28 @@ components:
           type: array
           items:
             $ref: '#/components/schemas/Place'
+        placeSchema:
+          type: string
+          example: Seralized place schema
 
     EventForm:
       type: object
+      required:
+        - title
+        - name
+        - startTime
+        - endTime
+        - latitude
+        - longitude
+        - maxPlace
+        - categoriesIds
       properties:
         title:
           type: string
           example: Short description of Event
+        name:
+          type: string
+          example: Long description of Event
         startTime:
           type: integer
           format: int64
@@ -470,23 +550,64 @@ components:
         longitude:
           type: string
           example: '-3.7051359'
-        name:
-          type: string
-          example: Long description of Event
         placeSchema:
           type: string
           example: Seralized place schema
-        categories:
-          type: array
-          items:
-            $ref: '#/components/schemas/Category'
-        freePlace:
+        maxPlace:
           type: integer
           format: int64
-          example: 2       
+          example: 2 
+        categoriesIds:
+          type: array
+          items:
+            type: integer
+            example: [1,2,3]
+          minItems: 0
+    
+    EventPatch:
+    #All field are optional
+      type: object
+      properties:
+        title:
+          type: string
+          example: Short description of Event
+        name:
+          type: string
+          example: Long description of Event
+        startTime:
+          type: integer
+          format: int64
+          example: 1673034164
+        endTime:
+          type: integer
+          format: int64
+          example: 1683034164
+        latitude:
+          type: string
+          example: '40.4775315'
+        longitude:
+          type: string
+          example: '-3.7051359'
+        placeSchema:
+          type: string
+          example: Seralized place schema
+        maxPlace:
+          type: integer
+          format: int64
+          example: 2 
+        categoriesIds:
+          type: array
+          items:
+            type: integer
+            example: [1,2,3]
+          minItems: 0
+      
           
     Place:
       type: object
+      required:
+       - id
+       - free
       properties:
         id:
           type: integer
@@ -499,6 +620,9 @@ components:
           
     Category:
       type: object
+      required:
+       - id
+       - name
       properties:
         id:
           type: integer
@@ -507,6 +631,7 @@ components:
         name:
           type: string
           example: Sport
+          
     EventStatus:
       type: string
       description: event status
@@ -516,8 +641,13 @@ components:
         - done
         - cancelled
       example: done
+      
     ReservationDTO:
       type: object
+      required:
+        - eventId
+        - placeId
+        - reservationToken
       properties:
         eventId:
           type: integer
@@ -533,6 +663,11 @@ components:
 
     Organizer:
       type: object
+      required:
+        - id
+        - name
+        - email
+        - status
       properties:
         id:
           type: integer
@@ -544,13 +679,6 @@ components:
         email:
           type: string
           example: john@email.com
-        password:
-          type: string
-          example: '12345'
-        events:
-          type: array
-          items:
-            $ref: '#/components/schemas/Event'
         status:
           type: string
           description: User Status
@@ -560,6 +688,10 @@ components:
  
     OrganizerForm:
       type: object
+      required:
+        - name
+        - email
+        - password
       properties:
         name:
           type: string
@@ -570,6 +702,16 @@ components:
         password:
           type: string
           example: '12345'
+    
+    OrganizerPatch:
+      type: object
+      properties:
+        name:
+          type: string
+          example: NewUserName
+        password:
+          type: string
+          example: 'myNewPassword'
 
   securitySchemes:
     token:

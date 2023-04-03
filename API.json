@@ -11,7 +11,7 @@
   },
   "servers": [
     {
-      "url": "https://pw.edu.pl/api/v3"
+      "url": "https://yourbackenhosting.edu.pl"
     }
   ],
   "tags": [
@@ -149,7 +149,7 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/Event"
+                  "$ref": "#/components/schemas/EventWithPlaces"
                 }
               }
             }
@@ -215,7 +215,7 @@
           "content": {
             "application/json": {
               "schema": {
-                "$ref": "#/components/schemas/Event"
+                "$ref": "#/components/schemas/EventPatch"
               }
             }
           }
@@ -245,7 +245,7 @@
         "parameters": [
           {
             "name": "categoryId",
-            "in": "query",
+            "in": "header",
             "description": "ID of category",
             "required": true,
             "schema": {
@@ -306,7 +306,7 @@
         "parameters": [
           {
             "name": "categoryName",
-            "in": "query",
+            "in": "header",
             "description": "name of category",
             "required": true,
             "schema": {
@@ -346,7 +346,7 @@
         "parameters": [
           {
             "name": "eventId",
-            "in": "query",
+            "in": "header",
             "description": "ID of event",
             "required": true,
             "schema": {
@@ -356,7 +356,7 @@
           },
           {
             "name": "placeID",
-            "in": "query",
+            "in": "header",
             "description": "ID of place",
             "required": false,
             "schema": {
@@ -393,7 +393,7 @@
         "parameters": [
           {
             "name": "reservationToken",
-            "in": "query",
+            "in": "header",
             "description": "token of reservation",
             "required": true,
             "schema": {
@@ -492,7 +492,7 @@
           },
           {
             "name": "code",
-            "in": "query",
+            "in": "header",
             "description": "code from email",
             "required": true,
             "schema": {
@@ -569,7 +569,7 @@
           "content": {
             "application/json": {
               "schema": {
-                "$ref": "#/components/schemas/Organizer"
+                "$ref": "#/components/schemas/OrganizerPatch"
               }
             }
           }
@@ -600,7 +600,7 @@
         "parameters": [
           {
             "name": "email",
-            "in": "query",
+            "in": "header",
             "description": "The organizer email for login",
             "required": true,
             "schema": {
@@ -609,7 +609,7 @@
           },
           {
             "name": "password",
-            "in": "query",
+            "in": "header",
             "description": "the password",
             "required": true,
             "schema": {
@@ -645,7 +645,17 @@
     "schemas": {
       "Event": {
         "required": [
-          "id"
+          "id",
+          "title",
+          "name",
+          "startTime",
+          "endTime",
+          "latitude",
+          "longitude",
+          "maxPlace",
+          "categories",
+          "status",
+          "freePlace"
         ],
         "type": "object",
         "properties": {
@@ -680,9 +690,78 @@
             "type": "string",
             "example": "Long description of Event"
           },
+          "status": {
+            "$ref": "#/components/schemas/EventStatus"
+          },
+          "categories": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/Category"
+            }
+          },
+          "freePlace": {
+            "type": "integer",
+            "format": "int64",
+            "example": 2
+          },
+          "maxPlace": {
+            "type": "integer",
+            "format": "int64",
+            "example": 100
+          },
           "placeSchema": {
             "type": "string",
             "example": "Seralized place schema"
+          }
+        }
+      },
+      "EventWithPlaces": {
+        "required": [
+          "id",
+          "title",
+          "name",
+          "startTime",
+          "endTime",
+          "latitude",
+          "longitude",
+          "maxPlace",
+          "categories",
+          "status",
+          "freePlace",
+          "places"
+        ],
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "integer",
+            "format": "int64",
+            "example": 10
+          },
+          "title": {
+            "type": "string",
+            "example": "Short description of Event"
+          },
+          "startTime": {
+            "type": "integer",
+            "format": "int64",
+            "example": 1673034164
+          },
+          "endTime": {
+            "type": "integer",
+            "format": "int64",
+            "example": 1683034164
+          },
+          "latitude": {
+            "type": "string",
+            "example": "40.4775315"
+          },
+          "longitude": {
+            "type": "string",
+            "example": "-3.7051359"
+          },
+          "name": {
+            "type": "string",
+            "example": "Long description of Event"
           },
           "status": {
             "$ref": "#/components/schemas/EventStatus"
@@ -708,15 +787,33 @@
             "items": {
               "$ref": "#/components/schemas/Place"
             }
+          },
+          "placeSchema": {
+            "type": "string",
+            "example": "Seralized place schema"
           }
         }
       },
       "EventForm": {
         "type": "object",
+        "required": [
+          "title",
+          "name",
+          "startTime",
+          "endTime",
+          "latitude",
+          "longitude",
+          "maxPlace",
+          "categoriesIds"
+        ],
         "properties": {
           "title": {
             "type": "string",
             "example": "Short description of Event"
+          },
+          "name": {
+            "type": "string",
+            "example": "Long description of Event"
           },
           "startTime": {
             "type": "integer",
@@ -736,29 +833,87 @@
             "type": "string",
             "example": "-3.7051359"
           },
+          "placeSchema": {
+            "type": "string",
+            "example": "Seralized place schema"
+          },
+          "maxPlace": {
+            "type": "integer",
+            "format": "int64",
+            "example": 2
+          },
+          "categoriesIds": {
+            "type": "array",
+            "items": {
+              "type": "integer",
+              "example": [
+                1,
+                2,
+                3
+              ]
+            },
+            "minItems": 0
+          }
+        }
+      },
+      "EventPatch": {
+        "type": "object",
+        "properties": {
+          "title": {
+            "type": "string",
+            "example": "Short description of Event"
+          },
           "name": {
             "type": "string",
             "example": "Long description of Event"
+          },
+          "startTime": {
+            "type": "integer",
+            "format": "int64",
+            "example": 1673034164
+          },
+          "endTime": {
+            "type": "integer",
+            "format": "int64",
+            "example": 1683034164
+          },
+          "latitude": {
+            "type": "string",
+            "example": "40.4775315"
+          },
+          "longitude": {
+            "type": "string",
+            "example": "-3.7051359"
           },
           "placeSchema": {
             "type": "string",
             "example": "Seralized place schema"
           },
-          "categories": {
-            "type": "array",
-            "items": {
-              "$ref": "#/components/schemas/Category"
-            }
-          },
-          "freePlace": {
+          "maxPlace": {
             "type": "integer",
             "format": "int64",
             "example": 2
+          },
+          "categoriesIds": {
+            "type": "array",
+            "items": {
+              "type": "integer",
+              "example": [
+                1,
+                2,
+                3
+              ]
+            },
+            "minItems": 0
           }
         }
       },
       "Place": {
         "type": "object",
+        "required": [
+          "id",
+          "free"
+        ],
         "properties": {
           "id": {
             "type": "integer",
@@ -773,6 +928,10 @@
       },
       "Category": {
         "type": "object",
+        "required": [
+          "id",
+          "name"
+        ],
         "properties": {
           "id": {
             "type": "integer",
@@ -798,6 +957,11 @@
       },
       "ReservationDTO": {
         "type": "object",
+        "required": [
+          "eventId",
+          "placeId",
+          "reservationToken"
+        ],
         "properties": {
           "eventId": {
             "type": "integer",
@@ -817,6 +981,12 @@
       },
       "Organizer": {
         "type": "object",
+        "required": [
+          "id",
+          "name",
+          "email",
+          "status"
+        ],
         "properties": {
           "id": {
             "type": "integer",
@@ -831,16 +1001,6 @@
             "type": "string",
             "example": "john@email.com"
           },
-          "password": {
-            "type": "string",
-            "example": "12345"
-          },
-          "events": {
-            "type": "array",
-            "items": {
-              "$ref": "#/components/schemas/Event"
-            }
-          },
           "status": {
             "type": "string",
             "description": "User Status",
@@ -853,6 +1013,11 @@
       },
       "OrganizerForm": {
         "type": "object",
+        "required": [
+          "name",
+          "email",
+          "password"
+        ],
         "properties": {
           "name": {
             "type": "string",
@@ -865,6 +1030,19 @@
           "password": {
             "type": "string",
             "example": "12345"
+          }
+        }
+      },
+      "OrganizerPatch": {
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string",
+            "example": "NewUserName"
+          },
+          "password": {
+            "type": "string",
+            "example": "myNewPassword"
           }
         }
       }
